@@ -10,6 +10,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
@@ -112,13 +113,13 @@ public final class CheckMark {
                     } else {
                         field.set(instance, mock);
                     }
-                    if (!mock.equals(readMethod.invoke(instance))) {
-                        throw new AssertionError(String.format(ACCESSOR_FAIL_MESSAGE, cls, name));
+                    if (!checkReadMethod(instance, readMethod, mock)) {
+                        throw new AssertionError(String.format(ACCESSOR_FAIL_MESSAGE, cls.getCanonicalName(), name));
                     }
                 } catch (NoSuchFieldException e) {
                     LOGGER.warn(NO_GETTER_MESSAGE, name);
                 } catch (Exception e) {
-                    throw new AssertionError(String.format(ACCESSOR_FAIL_MESSAGE, cls, name), e);
+                    throw new AssertionError(String.format(ACCESSOR_FAIL_MESSAGE, cls.getCanonicalName(), name), e);
                 }
             }
         }
@@ -163,11 +164,11 @@ public final class CheckMark {
 
                     Field field = Reflection.getField(cls, name);
                     field.setAccessible(true);
-                    if (!mock.equals(field.get(instance))) {
-                        throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls, name));
+                    if (!checkField(field, instance, mock)) {
+                        throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls.getCanonicalName(), name));
                     }
                 } catch (Exception e) {
-                    throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls, name), e);
+                    throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls.getCanonicalName(), name), e);
                 }
             }
         }
@@ -238,6 +239,20 @@ public final class CheckMark {
             }
         }
         throw new IllegalArgumentException(String.format(NO_VALID_CONSTRUCTOR_FAIL_MESSAGE, cls, constructors.size()));
+    }
+
+    private static boolean checkField(Field field, Object instance, Object expectedValue) throws IllegalAccessException {
+        if (field.getType().isPrimitive()) {
+            return expectedValue.equals(field.get(instance));
+        }
+        return expectedValue == field.get(instance);
+    }
+
+    private static boolean checkReadMethod(Object instance, Method readMethod, Object expectedValue) throws IllegalAccessException, InvocationTargetException {
+        if (readMethod.getReturnType().isPrimitive()) {
+            return expectedValue.equals(readMethod.invoke(instance));
+        }
+        return expectedValue == readMethod.invoke(instance);
     }
 
     private static Object createPrimitive(Class<?> cls) {

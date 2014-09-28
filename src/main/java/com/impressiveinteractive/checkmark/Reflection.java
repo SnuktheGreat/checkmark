@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * Utility class to help with common reflection tasks.
  */
 public final class Reflection {
-    private Reflection(){
+    private Reflection() {
         throw new AssertionError("Private constructor.");
     }
 
@@ -29,7 +29,8 @@ public final class Reflection {
             if (superclass != null) {
                 return getField(superclass, name);
             } else {
-                throw new NoSuchFieldException(String.format("Could not find field %s.", name));
+                throw new NoSuchFieldException(String.format("Could not find field %s.%s.",
+                        cls.getCanonicalName(), name));
             }
         }
     }
