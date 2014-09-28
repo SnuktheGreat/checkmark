@@ -105,7 +105,7 @@ public final class CheckMark {
                 String name = descriptor.getName();
 
                 try {
-                    Field field = getField(cls, name);
+                    Field field = Reflection.getField(cls, name);
                     field.setAccessible(true);
                     if (Modifier.isFinal(field.getModifiers())) {
                         mock = field.get(instance);
@@ -161,7 +161,7 @@ public final class CheckMark {
                 try {
                     writeMethod.invoke(instance, mock);
 
-                    Field field = getField(cls, name);
+                    Field field = Reflection.getField(cls, name);
                     field.setAccessible(true);
                     if (!mock.equals(field.get(instance))) {
                         throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls, name));
@@ -238,19 +238,6 @@ public final class CheckMark {
             }
         }
         throw new IllegalArgumentException(String.format(NO_VALID_CONSTRUCTOR_FAIL_MESSAGE, cls, constructors.size()));
-    }
-
-    private static Field getField(Class<?> cls, String name) throws NoSuchFieldException {
-        try {
-            return cls.getDeclaredField(name);
-        } catch (NoSuchFieldException e) {
-            Class<?> superclass = cls.getSuperclass();
-            if (superclass != null) {
-                return getField(superclass, name);
-            } else {
-                throw new NoSuchFieldException(String.format("Could not find field %s.", name));
-            }
-        }
     }
 
     private static Object createPrimitive(Class<?> cls) {
