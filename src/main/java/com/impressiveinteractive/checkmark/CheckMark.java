@@ -18,7 +18,9 @@ public final class CheckMark {
     private static final Logger LOGGER = LoggerFactory.getLogger(CheckMark.class);
 
     private static final String ACCESSOR_FAIL_MESSAGE = "Accessor to field %s.%s does not work.";
+    private static final String ACCESSOR_EXCEPTION_MESSAGE = "Accessor to field %s.%s threw an exception.";
     private static final String MUTATOR_FAIL_MESSAGE = "Mutator to field %s.%s does not work.";
+    private static final String MUTATOR_EXCEPTION_MESSAGE = "Mutator to field %s.%s threw an exception.";
     private static final String NO_GETTER_MESSAGE =
             "Ignoring getter for property \"{}\" since its field can not be found. Is this a getter?";
 
@@ -101,7 +103,7 @@ public final class CheckMark {
                 } catch (NoSuchFieldException e) {
                     LOGGER.warn(NO_GETTER_MESSAGE, name);
                 } catch (Exception e) {
-                    throw new AssertionError(String.format(ACCESSOR_FAIL_MESSAGE, cls.getCanonicalName(), name), e);
+                    throw new AssertionError(String.format(ACCESSOR_EXCEPTION_MESSAGE, cls.getCanonicalName(), name), e);
                 }
             }
         }
@@ -148,7 +150,7 @@ public final class CheckMark {
                         throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls.getCanonicalName(), name));
                     }
                 } catch (Exception e) {
-                    throw new AssertionError(String.format(MUTATOR_FAIL_MESSAGE, cls.getCanonicalName(), name), e);
+                    throw new AssertionError(String.format(MUTATOR_EXCEPTION_MESSAGE, cls.getCanonicalName(), name), e);
                 }
             }
         }

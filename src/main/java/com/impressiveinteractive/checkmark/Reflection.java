@@ -31,7 +31,7 @@ public final class Reflection {
      * Create a "dumb" mock. A dumb mock is <strong><em>any</em></strong> kind of non-null value. Different types will
      * return different objects which can be a Mockito compatible mock, but this is not guaranteed. More specifically:
      * <ul>
-     * <li>Primitive types will return a boxed primitive 0 value;</li>
+     * <li>Primitive types will return a boxed primitive non default value;</li>
      * <li>Array types will return an empty array of the given type;</li>
      * <li>Enumeration types will return the first value of that type;</li>
      * <li>Final types will return an instance created by {@link #createInstance(Class)};</li>
@@ -121,21 +121,21 @@ public final class Reflection {
 
     private static Object createPrimitive(Class<?> cls) {
         if (cls.equals(boolean.class)) {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         } else if (cls.equals(byte.class)) {
-            return (byte) 0;
+            return (byte) 1995;
         } else if (cls.equals(char.class)) {
-            return '\u0000';
+            return '\u1995';
         } else if (cls.equals(short.class)) {
-            return (short) 0;
+            return (short) 1995;
         } else if (cls.equals(int.class)) {
-            return 0;
+            return 1995;
         } else if (cls.equals(long.class)) {
-            return 0l;
+            return 1995l;
         } else if (cls.equals(float.class)) {
-            return 0f;
+            return 1995f;
         } else if (cls.equals(double.class)) {
-            return 0.0;
+            return 1995.0;
         }
         throw new IllegalArgumentException(String.format(UNKNOWN_PRIMITIVE_MESSAGE, cls));
     }

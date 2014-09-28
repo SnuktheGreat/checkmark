@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@SuppressWarnings("UnusedDeclaration")
 public class ReflectionTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -30,20 +31,20 @@ public class ReflectionTest {
         assertThat(Reflection.dumbMock(Float.class), is(instanceOf(Float.class)));
         assertThat(Reflection.dumbMock(Double.class), is(instanceOf(Double.class)));
 
-        assertThat(Reflection.dumbMock(boolean.class), is(false));
-        assertThat(Reflection.dumbMock(byte.class), is((byte) 0));
-        assertThat(Reflection.dumbMock(char.class), is('\u0000'));
-        assertThat(Reflection.dumbMock(short.class), is((short) 0));
-        assertThat(Reflection.dumbMock(int.class), is(0));
-        assertThat(Reflection.dumbMock(long.class), is(0l));
-        assertThat(Reflection.dumbMock(float.class), is(0f));
-        assertThat(Reflection.dumbMock(double.class), is(0.0));
+        assertThat(Reflection.dumbMock(boolean.class), is(true));
+        assertThat(Reflection.dumbMock(byte.class), is((byte) 1995));
+        assertThat(Reflection.dumbMock(char.class), is('\u1995'));
+        assertThat(Reflection.dumbMock(short.class), is((short) 1995));
+        assertThat(Reflection.dumbMock(int.class), is(1995));
+        assertThat(Reflection.dumbMock(long.class), is(1995l));
+        assertThat(Reflection.dumbMock(float.class), is(1995f));
+        assertThat(Reflection.dumbMock(double.class), is(1995.0));
 
         assertThat(Reflection.dumbMock(Double[].class), is(emptyArray()));
 
         assertThat(Reflection.dumbMock(TestInterface.class), is(instanceOf(TestInterface.class)));
         assertThat(Reflection.dumbMock(TestAbstractClass.class), is(instanceOf(TestAbstractClass.class)));
-        assertThat(Reflection.dumbMock(TestClass.class), is(instanceOf(TestClass.class)));
+        assertThat(Reflection.dumbMock(TestImplementingClass.class), is(instanceOf(TestImplementingClass.class)));
         assertThat(Reflection.dumbMock(TestEnum.class), is(instanceOf(TestEnum.class)));
     }
 
@@ -52,16 +53,16 @@ public class ReflectionTest {
         assertThat(Reflection.createInstance(Object.class), is(instanceOf(Object.class)));
         assertThat(Reflection.createInstance(String.class), is(equalTo("")));
 
-        assertThat(Reflection.createInstance(Boolean.class), is(false));
-        assertThat(Reflection.createInstance(Byte.class), is((byte) 0));
-        assertThat(Reflection.createInstance(Character.class), is('\u0000'));
-        assertThat(Reflection.createInstance(Short.class), is((short) 0));
-        assertThat(Reflection.createInstance(Integer.class), is(0));
-        assertThat(Reflection.createInstance(Long.class), is(0l));
-        assertThat(Reflection.createInstance(Float.class), is(0f));
-        assertThat(Reflection.createInstance(Double.class), is(0.0));
+        assertThat(Reflection.createInstance(Boolean.class), is(true));
+        assertThat(Reflection.createInstance(Byte.class), is((byte) 1995));
+        assertThat(Reflection.createInstance(Character.class), is('\u1995'));
+        assertThat(Reflection.createInstance(Short.class), is((short) 1995));
+        assertThat(Reflection.createInstance(Integer.class), is(1995));
+        assertThat(Reflection.createInstance(Long.class), is(1995l));
+        assertThat(Reflection.createInstance(Float.class), is(1995f));
+        assertThat(Reflection.createInstance(Double.class), is(1995.0));
 
-        assertThat(Reflection.createInstance(TestClass.class), is(instanceOf(TestClass.class)));
+        assertThat(Reflection.createInstance(TestImplementingClass.class), is(instanceOf(TestImplementingClass.class)));
     }
 
     @Test
@@ -87,9 +88,9 @@ public class ReflectionTest {
 
     @Test
     public void testGetField() throws Exception {
-        Field expected = Super.class.getDeclaredField("stringy");
-        assertThat(Reflection.getField(Super.class, "stringy"), is(expected));
-        assertThat(Reflection.getField(Derived.class, "stringy"), is(expected));
+        Field expected = TestAbstractClass.class.getDeclaredField("stringValue");
+        assertThat(Reflection.getField(TestAbstractClass.class, "stringValue"), is(expected));
+        assertThat(Reflection.getField(TestImplementingClass.class, "stringValue"), is(expected));
     }
 
     @Test
@@ -99,17 +100,35 @@ public class ReflectionTest {
         Reflection.getField(Other.class, "stringy");
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public class Super {
-        private String stringy;
+    public static interface TestInterface {
+        String getStringValue();
+
+        void setStringValue(String stringValue);
     }
 
-    public class Derived extends Super {
+    public static abstract class TestAbstractClass implements TestInterface {
+        private String stringValue;
+
+        @Override
+        public String getStringValue() {
+            return stringValue;
+        }
+
+        @Override
+        public void setStringValue(String stringValue) {
+            this.stringValue = stringValue;
+        }
+    }
+
+    public class TestImplementingClass extends TestAbstractClass {
         // Nothing new
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    public static enum TestEnum {
+        TRUE, FALSE, MAYBE
+    }
+
     public class Other {
-        private String notStringy;
+        private int intValue;
     }
 }
