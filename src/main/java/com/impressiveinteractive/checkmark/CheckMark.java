@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Utility class that can helps test common use cases like accessors abd mutators.
+ * Test common pieces of code like accessors and mutators.
  */
 public final class CheckMark {
     private static final Logger LOGGER = LoggerFactory.getLogger(CheckMark.class);
