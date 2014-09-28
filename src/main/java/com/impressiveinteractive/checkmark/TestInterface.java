@@ -5,105 +5,105 @@ import java.util.Map;
 
 @SuppressWarnings("UnusedDeclaration")
 interface TestInterface {
-	int getNumber();
+    int getNumber();
 
-	boolean isBooleanPrimitiveValue();
+    boolean isBooleanPrimitiveValue();
 
-	void setBooleanPrimitiveValue(boolean booleanPrimitiveValue);
+    void setBooleanPrimitiveValue(boolean booleanPrimitiveValue);
 
-	byte getBytePrimitiveValue();
+    byte getBytePrimitiveValue();
 
-	void setBytePrimitiveValue(byte bytePrimitiveValue);
+    void setBytePrimitiveValue(byte bytePrimitiveValue);
 
-	char getCharPrimitiveValue();
+    char getCharPrimitiveValue();
 
-	void setCharPrimitiveValue(char charPrimitiveValue);
+    void setCharPrimitiveValue(char charPrimitiveValue);
 
-	short getShortPrimitiveValue();
+    short getShortPrimitiveValue();
 
-	void setShortPrimitiveValue(short shortPrimitiveValue);
+    void setShortPrimitiveValue(short shortPrimitiveValue);
 
-	int getIntPrimitiveValue();
+    int getIntPrimitiveValue();
 
-	void setIntPrimitiveValue(int intPrimitiveValue);
+    void setIntPrimitiveValue(int intPrimitiveValue);
 
-	long getLongPrimitiveValue();
+    long getLongPrimitiveValue();
 
-	void setLongPrimitiveValue(long longPrimitiveValue);
+    void setLongPrimitiveValue(long longPrimitiveValue);
 
-	float getFloatPrimitiveValue();
+    float getFloatPrimitiveValue();
 
-	void setFloatPrimitiveValue(float floatPrimitiveValue);
+    void setFloatPrimitiveValue(float floatPrimitiveValue);
 
-	double getDoublePrimitiveValue();
+    double getDoublePrimitiveValue();
 
-	void setDoublePrimitiveValue(double doublePrimitiveValue);
+    void setDoublePrimitiveValue(double doublePrimitiveValue);
 
-	List<String> getList();
+    List<String> getList();
 
-	void setList(List<String> list);
+    void setList(List<String> list);
 
-	Map<Integer, String> getMap();
+    Map<Integer, String> getMap();
 
-	void setMap(Map<Integer, String> map);
+    void setMap(Map<Integer, String> map);
 
-	Object getObjectValue();
+    Object getObjectValue();
 
-	void setObjectValue(Object objectValue);
+    void setObjectValue(Object objectValue);
 
-	String getStringValue();
+    String getStringValue();
 
-	void setStringValue(String stringValue);
+    void setStringValue(String stringValue);
 
-	Boolean getBooleanValue();
+    Boolean getBooleanValue();
 
-	void setBooleanValue(Boolean booleanValue);
+    void setBooleanValue(Boolean booleanValue);
 
-	Byte getByteValue();
+    Byte getByteValue();
 
-	void setByteValue(Byte byteValue);
+    void setByteValue(Byte byteValue);
 
-	Character getCharacterValue();
+    Character getCharacterValue();
 
-	void setCharacterValue(Character characterValue);
+    void setCharacterValue(Character characterValue);
 
-	Short getShortValue();
+    Short getShortValue();
 
-	void setShortValue(Short shortValue);
+    void setShortValue(Short shortValue);
 
-	Integer getIntegerValue();
+    Integer getIntegerValue();
 
-	void setIntegerValue(Integer integerValue);
+    void setIntegerValue(Integer integerValue);
 
-	Long getLongValue();
+    Long getLongValue();
 
-	void setLongValue(Long longValue);
+    void setLongValue(Long longValue);
 
-	Float getFloatValue();
+    Float getFloatValue();
 
-	void setFloatValue(Float floatValue);
+    void setFloatValue(Float floatValue);
 
-	Double getDoubleValue();
+    Double getDoubleValue();
 
-	void setDoubleValue(Double doubleValue);
+    void setDoubleValue(Double doubleValue);
 
-	Double[] getDoubleArrayValue();
+    Double[] getDoubleArrayValue();
 
-	void setDoubleArrayValue(Double[] doubleArrayValue);
+    void setDoubleArrayValue(Double[] doubleArrayValue);
 
-	TestInterface getTestInterfaceValue();
+    TestInterface getTestInterfaceValue();
 
-	void setTestInterfaceValue(TestInterface testInterfaceValue);
+    void setTestInterfaceValue(TestInterface testInterfaceValue);
 
-	TestAbstractClass getTestAbstractClassValue();
+    TestAbstractClass getTestAbstractClassValue();
 
-	void setTestAbstractClassValue(TestAbstractClass testAbstractClassValue);
+    void setTestAbstractClassValue(TestAbstractClass testAbstractClassValue);
 
-	TestClass getTestClassValue();
+    TestClass getTestClassValue();
 
-	void setTestClassValue(TestClass testClassValue);
+    void setTestClassValue(TestClass testClassValue);
 
-	TestEnum getTestEnumValue();
+    TestEnum getTestEnumValue();
 
-	void setTestEnumValue(TestEnum testEnumValue);
+    void setTestEnumValue(TestEnum testEnumValue);
 }
