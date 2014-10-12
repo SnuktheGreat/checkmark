@@ -8,8 +8,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 
@@ -17,6 +19,12 @@ import static java.util.Arrays.asList;
  * Utility class to help with common reflection tasks.
  */
 public final class Reflection {
+    /**
+     * The default seed used for the delegate call to {@link #dumbMock(Class, long)} when calling
+     * {@link #dumbMock(Class)}.
+     */
+    public static final long DEFAULT_SEED = 1l;
+
     private static final String NO_VALID_CONSTRUCTOR_FAIL_MESSAGE =
             "No valid constructor for %s among the %d candidates.";
     private static final String CREATE_ABSTRACT_FAIL_MESSAGE =
@@ -29,29 +37,47 @@ public final class Reflection {
 
     /**
      * Create a "dumb" mock. A dumb mock is <strong><em>any</em></strong> kind of non-null value. Different types will
-     * return different objects which can be a Mockito compatible mock, but this is not guaranteed. More specifically:
-     * <ul>
-     * <li>Primitive types will return a boxed primitive non default value;</li>
-     * <li>Array types will return an empty array of the given type;</li>
-     * <li>Enumeration types will return the first value of that type;</li>
-     * <li>Final types will return an instance created by {@link #createInstance(Class)};</li>
-     * <li>All other types will be handled by {@link Mockito#mock(Class)}.</li>
-     * </ul>
+     * return different objects which can be a Mockito compatible mock, but this is not guaranteed.
      *
      * @param cls The class to get a dumb mock for.
      * @param <T> The expected type.
      * @return The dumb mock of the given type.
      * @throws ReflectiveOperationException Thrown when creating an instance was not possible.
+     * @see #dumbMock(Class, long)
+     */
+    public static <T> T dumbMock(Class<T> cls) throws ReflectiveOperationException {
+        return dumbMock(cls, DEFAULT_SEED);
+    }
+
+    /**
+     * Create a "dumb" mock. A dumb mock is <strong><em>any</em></strong> kind of non-null value. Different types will
+     * return different objects which can be a Mockito compatible mock, but this is not guaranteed. More specifically:
+     * <ul>
+     * <li>Primitive types will return a boxed primitive value generated from the given seed;</li>
+     * <li>Array types will return an empty array of the given type;</li>
+     * <li>Enumeration types will return one of its values influenced by the given seed;</li>
+     * <li>Final types will return an instance created by {@link #createInstance(Class)};</li>
+     * <li>All other types will be handled by {@link Mockito#mock(Class)}.</li>
+     * </ul>
+     *
+     * @param cls  The class to get a dumb mock for.
+     * @param seed A seed used for the generation of {@link String} and primitive values.
+     * @param <T>  The expected type.
+     * @return The dumb mock of the given type.
+     * @throws ReflectiveOperationException Thrown when creating an instance was not possible.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T dumbMock(Class<T> cls) throws ReflectiveOperationException {
+    public static <T> T dumbMock(Class<T> cls, long seed) throws ReflectiveOperationException {
         if (cls.isPrimitive()) {
-            return (T) createPrimitive(cls);
+            return (T) createPrimitive(cls, seed);
         } else if (cls.isArray()) {
             return (T) Array.newInstance(cls.getComponentType(), 0);
         } else if (cls.isEnum()) {
-            Field first = cls.getFields()[0];
-            return (T) first.get(first.getName());
+            Field[] fields = cls.getFields();
+            Field selection = fields[((int) (seed % fields.length))];
+            return (T) selection.get(selection.getName());
+        } else if (cls == String.class) {
+            return (T) Long.toString(seed);
         } else if (Modifier.isFinal(cls.getModifiers())) {
             return createInstance(cls);
         }
@@ -119,23 +145,47 @@ public final class Reflection {
         }
     }
 
-    private static Object createPrimitive(Class<?> cls) {
+    /**
+     * Get all fields for the given {@link Class}. This includes all fields from all super classes with any visibility
+     * modifier, but excludes {@link Field#isSynthetic() sythetic fields}.
+     *
+     * @param cls The {@link Class} to get the fields for.
+     * @return All fields for the given {@link Class}.
+     */
+    public static Set<Field> getFields(Class<?> cls) {
+        Set<Field> allFields = new HashSet<>();
+
+        Class<?> current = cls;
+        while (current != Object.class) {
+            Field[] localFields = current.getDeclaredFields();
+            for (Field field : localFields) {
+                if (!field.isSynthetic()) {
+                    allFields.add(field);
+                }
+            }
+            current = current.getSuperclass();
+        }
+
+        return allFields;
+    }
+
+    private static Object createPrimitive(Class<?> cls, long seed) {
         if (cls.equals(boolean.class)) {
             return Boolean.TRUE;
         } else if (cls.equals(byte.class)) {
-            return (byte) 1995;
+            return (byte) seed;
         } else if (cls.equals(char.class)) {
-            return '\u1995';
+            return (char) (seed % 0x10000);
         } else if (cls.equals(short.class)) {
-            return (short) 1995;
+            return (short) seed;
         } else if (cls.equals(int.class)) {
-            return 1995;
+            return (int) seed;
         } else if (cls.equals(long.class)) {
-            return 1995l;
+            return seed;
         } else if (cls.equals(float.class)) {
-            return 1995f;
+            return (float) seed;
         } else if (cls.equals(double.class)) {
-            return 1995.0;
+            return (double) seed;
         }
         throw new IllegalArgumentException(String.format(UNKNOWN_PRIMITIVE_MESSAGE, cls));
     }
