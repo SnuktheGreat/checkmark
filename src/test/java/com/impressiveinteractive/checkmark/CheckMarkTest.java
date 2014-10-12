@@ -5,7 +5,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-@SuppressWarnings("UnusedDeclaration")
+import java.util.Objects;
+
+@SuppressWarnings({"UnusedDeclaration", "EqualsWhichDoesntCheckParameterClass"})
 public class CheckMarkTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -216,6 +218,128 @@ public class CheckMarkTest {
 
         public void setAccessible(String accessible) {
             this.accessible = accessible;
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCode() throws Exception {
+        CheckMark.testEqualsAndHashCode(EqualsClass.class);
+    }
+
+    public static class EqualsClass {
+        private int intField;
+        private String stringField;
+        private EqualsClass equalsClass;
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(intField, stringField, equalsClass);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final EqualsClass other = (EqualsClass) obj;
+            return Objects.equals(this.intField, other.intField)
+                    && Objects.equals(this.stringField, other.stringField)
+                    && Objects.equals(this.equalsClass, other.equalsClass);
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCodeEqualsNull() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(EqualsToNullClass.class);
+    }
+
+    public static class EqualsToNullClass {
+        @Override
+        public boolean equals(Object obj) {
+            return obj == null;
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCodeEqualsOtherClass() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(EqualsToObject.class);
+    }
+
+    public static class EqualsToObject {
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && obj.getClass().equals(Object.class);
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCodeNotEqualToSelf() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(NotEqualsToSelf.class);
+    }
+
+    public static class NotEqualsToSelf {
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && obj.getClass().equals(NotEqualsToSelf.class) && obj != this;
+        }
+    }
+
+    @Test
+    public void testEqualsNotEqualToIdenticalCopy() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(Object.class);
+    }
+
+    @Test
+    public void testHashCodeNotEqualToIdenticalCopy() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(DifferentHashCode.class);
+    }
+
+    public static class DifferentHashCode {
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && obj.getClass().equals(DifferentHashCode.class);
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCodeFieldNotUsed() throws Exception {
+        exception.expect(AssertionError.class);
+
+        CheckMark.testEqualsAndHashCode(FieldNotUsed.class);
+    }
+
+    public static class FieldNotUsed {
+        private int intField;
+        private String stringField;
+        private EqualsClass equalsClass;
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(intField, equalsClass);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final FieldNotUsed other = (FieldNotUsed) obj;
+            return Objects.equals(this.intField, other.intField)
+                    && Objects.equals(this.equalsClass, other.equalsClass);
         }
     }
 }

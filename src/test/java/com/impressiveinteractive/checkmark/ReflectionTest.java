@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.equalTo;
@@ -32,13 +34,13 @@ public class ReflectionTest {
         assertThat(Reflection.dumbMock(Double.class), is(instanceOf(Double.class)));
 
         assertThat(Reflection.dumbMock(boolean.class), is(true));
-        assertThat(Reflection.dumbMock(byte.class), is((byte) 1995));
-        assertThat(Reflection.dumbMock(char.class), is('\u1995'));
-        assertThat(Reflection.dumbMock(short.class), is((short) 1995));
-        assertThat(Reflection.dumbMock(int.class), is(1995));
-        assertThat(Reflection.dumbMock(long.class), is(1995l));
-        assertThat(Reflection.dumbMock(float.class), is(1995f));
-        assertThat(Reflection.dumbMock(double.class), is(1995.0));
+        assertThat(Reflection.dumbMock(byte.class), is((byte) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.dumbMock(char.class), is('\u0001'));
+        assertThat(Reflection.dumbMock(short.class), is((short) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.dumbMock(int.class), is((int) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.dumbMock(long.class), is(Reflection.DEFAULT_SEED));
+        assertThat(Reflection.dumbMock(float.class), is((float) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.dumbMock(double.class), is((double) Reflection.DEFAULT_SEED));
 
         assertThat(Reflection.dumbMock(Double[].class), is(emptyArray()));
 
@@ -54,13 +56,13 @@ public class ReflectionTest {
         assertThat(Reflection.createInstance(String.class), is(equalTo("")));
 
         assertThat(Reflection.createInstance(Boolean.class), is(true));
-        assertThat(Reflection.createInstance(Byte.class), is((byte) 1995));
-        assertThat(Reflection.createInstance(Character.class), is('\u1995'));
-        assertThat(Reflection.createInstance(Short.class), is((short) 1995));
-        assertThat(Reflection.createInstance(Integer.class), is(1995));
-        assertThat(Reflection.createInstance(Long.class), is(1995l));
-        assertThat(Reflection.createInstance(Float.class), is(1995f));
-        assertThat(Reflection.createInstance(Double.class), is(1995.0));
+        assertThat(Reflection.createInstance(Byte.class), is((byte) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.createInstance(Character.class), is('\u0001'));
+        assertThat(Reflection.createInstance(Short.class), is((short) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.createInstance(Integer.class), is((int) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.createInstance(Long.class), is(Reflection.DEFAULT_SEED));
+        assertThat(Reflection.createInstance(Float.class), is((float) Reflection.DEFAULT_SEED));
+        assertThat(Reflection.createInstance(Double.class), is((double) Reflection.DEFAULT_SEED));
 
         assertThat(Reflection.createInstance(TestImplementingClass.class), is(instanceOf(TestImplementingClass.class)));
     }
@@ -100,6 +102,17 @@ public class ReflectionTest {
         Reflection.getField(Other.class, "stringy");
     }
 
+    @Test
+    public void testGetFields() throws Exception {
+        Set<Field> expected = new HashSet<>();
+        expected.add(TestAbstractClass.class.getDeclaredField("intValue"));
+        expected.add(TestAbstractClass.class.getDeclaredField("doubleValue"));
+        expected.add(TestAbstractClass.class.getDeclaredField("stringValue"));
+        expected.add(TestImplementingClass.class.getDeclaredField("testInterfaceValue"));
+
+        assertThat(Reflection.getFields(TestImplementingClass.class), is(expected));
+    }
+
     public static interface TestInterface {
         String getStringValue();
 
@@ -107,6 +120,8 @@ public class ReflectionTest {
     }
 
     public static abstract class TestAbstractClass implements TestInterface {
+        public int intValue;
+        protected double doubleValue;
         private String stringValue;
 
         @Override
@@ -121,7 +136,7 @@ public class ReflectionTest {
     }
 
     public class TestImplementingClass extends TestAbstractClass {
-        // Nothing new
+        TestInterface testInterfaceValue;
     }
 
     public static enum TestEnum {
