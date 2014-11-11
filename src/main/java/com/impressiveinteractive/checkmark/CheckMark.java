@@ -1,5 +1,6 @@
 package com.impressiveinteractive.checkmark;
 
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import java.lang.reflect.Modifier;
  */
 public final class CheckMark {
     private static final Logger LOGGER = LoggerFactory.getLogger(CheckMark.class);
-    private static final int SEED_ONE = 1337;
+	private static final int SEED_ONE = 1337;
     private static final int SEED_TWO = 1338;
 
     private static final String ACCESSOR_FAIL_MESSAGE = "Accessor to field %s.%s does not work.";
@@ -43,7 +44,12 @@ public final class CheckMark {
         throw new AssertionError("Private constructor called");
     }
 
-    /**
+	public static <T> MockTester<T> test(Class<T> cls){
+		return new MockTester<>(cls);
+	}
+
+
+	/**
      * Test all the accessors and mutators for the given class. An instance of the given class will be created and
      * accessor and mutator information will be scanned for using the {@link Introspector}. These methods will then be
      * called while reflection is used to make sure they <em>get</em> or <em>set</em> as expected.
